@@ -1,0 +1,21 @@
+# 前端镜像：Node.js 运行 server.js（含静态文件 + API 代理）
+FROM node:18-alpine
+WORKDIR /app
+
+# 先复制 package.json，利用缓存
+COPY package.json package-lock.json* ./
+RUN npm install --production
+
+# 复制前端代码（index.html, app.js, styles.css, server.js 等）
+COPY index.html app.js styles.css server.js serve.js ./
+# uploads 目录运行时创建即可
+RUN mkdir -p uploads
+
+EXPOSE 3000
+
+# Docker Compose 中通过环境变量指定后端地址
+ENV BACKEND_HOST=backend
+ENV BACKEND_PORT=8080
+ENV PORT=3000
+
+CMD ["node", "server.js"]

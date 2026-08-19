@@ -1,0 +1,49 @@
+# 错题本应用 Docker Compose 编排（适配小内存服务器）
+# 只跑后端 + 前端两个容器，MySQL 使用宝塔自带的
+# MySQL 需在宝塔面板中创建数据库 mistakenote
+
+services:
+  # ===== Spring Boot 后端 =====
+  backend:
+    build:
+      context: ./springboot-backend
+      dockerfile: Dockerfile
+    container_name: mistakenote-backend
+    restart: unless-stopped
+    # 使用 host 网络模式，直接访问宿主机 MySQL（避免 Docker 网络配置）
+    # 同时省去端口映射开销
+    network_mode: host
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # 宿主机 MySQL（宝塔自带）
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-mistakenote}
+      DB_USER: ${DB_USER:-root}
+      DB_PASSWORD: ${DB_PASSWORD:?请在 .env 文件中设置数据库密码}
+      JWT_SECRET: ${JWT_SECRET:?请在 .env 文件中设置 JWT 密钥（至少32位随机字符串）}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      ARK_API_KEY: ${ARK_API_KEY:-}
+      JAVA_OPTS: "-Xmx384m -Xms128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m"
+    volumes:
+      - uploads_data:/app/uploads
+
+  # ===== Node.js 前端（含 API 代理） =====
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: mistakenote-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    network_mode: host
+    environment:
+      BACKEND_HOST: 127.0.0.1
+      BACKEND_PORT: 8080
+      PORT: 3000
+    volumes:
+      - uploads_data:/app/uploads
+
+volumes:
+  uploads_data:

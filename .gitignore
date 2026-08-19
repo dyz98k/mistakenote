@@ -1,0 +1,58 @@
+# 环境变量文件
+.env
+.env.local
+.env.production
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# 构建产物
+target/
+build/
+dist/
+
+# 日志
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# AI IDE / 工具配置
+.qoder/
+.trae/
+.codex/
+
+# 遗留：早期 Node.js 版后端（已由 springboot-backend 取代）
+/src/
+/data/
+
+# 运行时上传文件
+/uploads/
+
+# 压缩包与测试残留（仅根目录）
+*.zip
+/test_*.js
+/test_*.json
+/test_image*
+/tiny_image_base64.txt
+/view-part.html
+/qc
+/query
+/start
+/stop
