@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>错题本</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <div id="topbar" class="topbar">
+      <button id="backBtn" class="icon-btn" hidden>←</button>
+      <h1 id="pageTitle" class="title">登录</h1>
+      <div class="topbar-actions">
+        <button id="menuBtn" class="icon-btn hidden">☰</button>
+      </div>
+    </div>
+    <div id="overlay" class="overlay hidden"></div>
+    <div id="confirmDialog" class="dialog hidden">
+      <div class="dialog-content">
+        <h3 id="dialogTitle">提示</h3>
+        <p id="dialogText">确定要执行此操作吗？</p>
+        <div class="dialog-actions">
+          <button id="dialogCancel" class="small-btn">取消</button>
+          <button id="dialogOk" class="primary-btn">确定</button>
+        </div>
+      </div>
+    </div>
+    <div id="inputDialog" class="dialog hidden">
+      <div class="dialog-content">
+        <h3 id="inputDialogTitle">请输入</h3>
+        <input type="text" id="inputDialogValue" class="input-dialog-input">
+        <div class="dialog-actions">
+          <button id="inputDialogCancel" class="small-btn">取消</button>
+          <button id="inputDialogOk" class="primary-btn">确定</button>
+        </div>
+      </div>
+    </div>
+    <div id="cropDialog" class="dialog crop-dialog hidden">
+      <div class="dialog-content">
+        <h3>裁剪图片</h3>
+        <p class="crop-tip">拖动方框调整位置，拖动四角调整大小</p>
+        <div id="cropStage" class="crop-stage">
+          <img id="cropImg" class="crop-img" alt="待裁剪图片">
+          <div id="cropMask" class="crop-mask"></div>
+          <div id="cropBox" class="crop-box">
+            <span class="crop-handle crop-h-tl" data-h="tl"></span>
+            <span class="crop-handle crop-h-tr" data-h="tr"></span>
+            <span class="crop-handle crop-h-bl" data-h="bl"></span>
+            <span class="crop-handle crop-h-br" data-h="br"></span>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button id="cropSkipBtn" class="small-btn">跳过裁剪</button>
+          <button id="cropCancelBtn" class="small-btn">取消</button>
+          <button id="cropConfirmBtn" class="primary-btn">确定裁剪</button>
+        </div>
+      </div>
+    </div>
+    <div id="view-login" class="view">
+      <div class="content">
+        <div class="hero">
+          <div><p class="hero-sub">记录错题，提升自我</p><h2 class="hero-title">错题本</h2></div>
+          <div class="hero-img">📝</div>
+        </div>
+        <div class="form-card">
+          <div class="group"><input type="text" id="loginUsername" placeholder="用户名"></div>
+          <div class="group"><input type="password" id="loginPassword" placeholder="密码"></div>
+          <button id="loginBtn" class="primary-btn">登录</button>
+          <p style="text-align:center;margin-top:12px;color:var(--text-muted)">没有账户？<a href="#" id="toRegisterBtn">立即注册</a></p>
+        </div>
+      </div>
+    </div>
+    <div id="view-register" class="view hidden">
+      <div class="content">
+        <div class="hero">
+          <div><p class="hero-sub">创建账户，开始学习</p><h2 class="hero-title">注册</h2></div>
+          <div class="hero-img">🚀</div>
+        </div>
+        <div class="form-card">
+          <div class="group"><input type="text" id="regUsername" placeholder="用户名"></div>
+          <div class="group"><input type="email" id="regEmail" placeholder="邮箱"></div>
+          <div class="group"><input type="password" id="regPassword" placeholder="密码"></div>
+          <button id="registerBtn" class="primary-btn">注册</button>
+          <p style="text-align:center;margin-top:12px;color:var(--text-muted)">已有账户？<a href="#" id="toLoginBtn">立即登录</a></p>
+        </div>
+      </div>
+    </div>
+    <div id="view-home" class="view hidden">
+      <div class="content">
+        <div class="hero hero-camera">
+          <button id="heroCameraBtn" class="hero-camera-btn" aria-label="拍照上传错题">
+            <span class="hero-camera-ring">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                <circle cx="12" cy="12" r="3.2"/>
+              </svg>
+            </span>
+            <span class="hero-camera-label">拍照上传错题</span>
+          </button>
+          <p class="hero-sub hero-sub-center">点击相机开始</p>
+        </div>
+        <div class="hero-meta">
+          <div class="hero-greeting">
+            <p class="hero-sub">欢迎回来</p>
+            <h2 class="hero-title" id="userName">用户</h2>
+          </div>
+          <div class="hero-points"><span id="userPoints">0</span><span class="hero-points-unit">积分</span></div>
+          <span style="display:none" id="userStreak">0</span>
+        </div>
+        <div class="stats stats-compact">
+          <div class="stat-card"><span class="stat-num" id="statTotal">0</span><span class="stat-label">总错题</span></div>
+          <div class="stat-card"><span class="stat-num" id="statSubjects">0</span><span class="stat-label">学科数</span></div>
+          <div class="stat-card"><span class="stat-num" id="statToday">0</span><span class="stat-label">今日新增</span></div>
+        </div>
+        <div class="section-head"><h3>学科分类</h3><button class="link-btn" id="toSubjectsBtn">管理</button></div>
+        <div id="subjectChips" class="chip-row"></div>
+        <div class="section-head"><h3>最近错题</h3><button class="link-btn" id="toAllBtn">查看全部</button></div>
+        <div id="recentList" class="mistake-list"></div>
+      </div>
+    </div>
+    <div id="view-upload" class="view hidden">
+      <div class="content">
+        <div class="upload-card">
+          <input type="file" id="fileInput" accept="image/*" hidden>
+          <div id="uploadArea" class="photo-box">
+            <button id="photoBtn" class="photo-btn"><svg width="48" height="48" viewBox="0 0 24 24" fill="var(--primary)"><path d="M19 7v3H3v2h16v3l4-4-4-4zm8 5h-3v2h3v3h2v-3h3v-2h-3V9h-2v3z"/></svg><p>点击上传错题图片</p></button>
+          </div>
+          <div id="preview" class="preview hidden">
+            <div class="preview-header">
+              <span class="preview-icon">📷</span>
+              <span class="preview-label">图片已上传</span>
+            </div>
+            <img id="previewImg" src="" alt="错题图片预览">
+            <div id="ocrStatus" class="ocr-status hidden"></div>
+            <button id="rechooseBtn" class="small-btn rechoose-btn">重新上传</button>
+          </div>
+          <div id="autoTag" class="auto-tag hidden"><span class="auto-dot"></span><span id="autoText"></span></div>
+        </div>
+        <div id="multiQuestionPanel" class="form-card hidden">
+          <div class="multi-head">
+            <span class="multi-title">📋 识别到 <span id="multiCount">0</span> 道题目</span>
+            <button id="addAllBtn" class="small-btn">全部添加</button>
+          </div>
+          <p class="tip">点击"添加此题"逐题加入错题集。</p>
+          <div id="multiQuestionList" class="multi-list"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-list" class="view hidden">
+      <div class="content">
+        <div class="search-row"><input type="text" id="searchInput" placeholder="搜索..."></div>
+        <div class="filter-bar">
+          <select id="listSubjectSelect" class="filter-select"><option value="">全部学科</option></select>
+          <select id="listChapterSelect" class="filter-select"><option value="">全部章节</option></select>
+          <button id="manageSubjectBtn" class="small-btn">管理学科</button>
+          <button id="manageChapterBtn" class="small-btn">管理章节</button>
+        </div>
+        <div id="listContainer" class="mistake-list"></div>
+      </div>
+    </div>
+    <div id="view-detail" class="view hidden">
+      <div class="content">
+        <div class="detail">
+          <img id="detailImg" class="detail-image" src="" alt=""><div class="detail-meta">
+            <div class="meta-row"><span class="meta-label">学科</span><span id="detailSubject"></span></div>
+            <div class="meta-row"><span class="meta-label">章节</span><span id="detailChapter"></span></div>
+            <div class="meta-row"><span class="meta-label">难度</span><span id="detailDifficulty"></span></div>
+            <div class="meta-row"><span class="meta-label">日期</span><span id="detailDate"></span></div>
+          </div>
+          <div class="detail-note">
+            <div class="detail-note-header"><h4>题目内容</h4><button id="ocrBtn" class="small-btn ocr-btn">📷 识别图片文字</button></div>
+            <p id="detailNote"></p>
+            <div id="ocrProgress" class="ocr-progress hidden"></div>
+          </div>
+          <div id="detailAnalysis" class="detail-analysis" style="display:none"><h4>AI分析</h4><div class="analysis-row"><span class="analysis-label">错误类型:</span><span class="analysis-value" id="analysisErrorType"></span></div><div class="analysis-row"><span class="analysis-label">薄弱点:</span><span class="analysis-value" id="analysisErrorPoint"></span></div><p id="analysisContent"></p></div>
+          <div class="detail-actions"><button id="editBtn" class="small-btn">编辑</button><button id="deleteBtn" class="danger-btn">删除</button></div>
+          <button id="analyzeBtn" class="primary-btn">AI分析</button>
+          <button id="generatePracticeBtn" class="primary-btn">生成练习</button>
+        </div>
+      </div>
+    </div>
+    <div id="view-manage" class="view hidden">
+      <div class="content">
+        <div class="section-head"><h3 id="manageTitle">管理学科</h3></div>
+        <div class="select-row"><input type="text" id="newItemInput" placeholder="输入名称..."><button id="addItemBtn" class="primary-btn">添加</button></div>
+        <div id="itemList" class="item-list"></div>
+      </div>
+    </div>
+    <div id="view-rewards" class="view hidden">
+      <div class="content">
+        <div class="rewards-profile"><div class="profile-avatar"><div class="avatar-circle"><span id="profileName">用户</span></div><span class="level-badge" id="levelBadge">新手</span></div><div class="profile-info"><h3>Lv.<span id="profileLevel">1</span></h3><p id="profileTitle">刚开始</p></div></div>
+        <div class="exp-card"><div class="exp-header"><span class="exp-label">经验</span><span class="exp-value"><span id="currentExp">0</span>/<span id="nextLevelExp">100</span></span></div><div class="exp-bar-container"><div class="exp-bar"><div id="expFill" class="exp-fill" style="width:0%"><div class="exp-glow"></div></div></div></div><p class="exp-tip">需<span id="expNeeded">100</span>升至Lv.<span id="nextLevel">2</span></p></div>
+        <div class="stats-grid">
+          <div class="stat-item"><div class="stat-icon">🔥</div><div class="stat-content"><span class="stat-value" id="streakDays">0</span><span class="stat-desc">连续天数</span></div></div>
+          <div class="stat-item"><div class="stat-icon">📝</div><div class="stat-content"><span class="stat-value" id="totalMistakes">0</span><span class="stat-desc">错题总数</span></div></div>
+          <div class="stat-item"><div class="stat-icon">✅</div><div class="stat-content"><span class="stat-value" id="reviewedCount">0</span><span class="stat-desc">已复习</span></div></div>
+          <div class="stat-item"><div class="stat-icon">⭐</div><div class="stat-content"><span class="stat-value" id="totalPoints">0</span><span class="stat-desc">总积分</span></div></div>
+        </div>
+        <p class="badge-progress">徽章(<span id="badgeCount">0</span>)</p>
+        <div id="badgesList" class="badges-grid"></div>
+        <p class="privilege-count">特权(<span id="unlockedPrivilegeCount">0</span>/12)</p>
+        <div id="privilegesList" class="privileges-grid"></div>
+        <div id="miniGameCard" class="mini-game-card hidden">
+          <div class="mini-game-header">
+            <div class="mini-game-title-wrap">
+              <span class="mini-game-icon">🎮</span>
+              <div>
+                <h3 class="mini-game-title">每日小挑战</h3>
+                <p class="mini-game-sub" id="miniGameSub">翻牌配对 · 找出所有相同图标</p>
+              </div>
+            </div>
+            <div class="mini-game-stats">
+              <span class="mg-stat">⏱️ <span id="mgTimer">30</span>s</span>
+              <span class="mg-stat">✅ <span id="mgPairs">0</span>/8</span>
+              <span class="mg-stat">🏆 最高 <span id="mgBest">0</span></span>
+            </div>
+          </div>
+          <div id="mgBoard" class="mg-board"></div>
+          <div class="mini-game-footer">
+            <button id="mgStartBtn" class="mg-btn primary">开始游戏</button>
+            <button id="mgResetBtn" class="mg-btn ghost hidden">重新开始</button>
+            <p class="mini-game-tip" id="mgTip">点击「开始游戏」挑战记忆翻牌，每对配对得 2 经验</p>
+          </div>
+        </div>
+        <div id="miniGameLocked" class="mini-game-locked hidden">
+          <span class="mg-lock-icon">🔒</span>
+          <p class="mg-lock-title">每日小游戏未解锁</p>
+          <p class="mg-lock-desc" id="mgLockDesc">达到 Lv.3 且当日上传 3 道错题后解锁</p>
+        </div>
+        <div class="leaderboard-card"><div class="section-head"><h3>排行榜</h3></div><div id="leaderboardList"></div></div>
+      </div>
+    </div>
+    <div id="view-ai" class="view hidden">
+      <div class="ai-container">
+        <div class="ai-header"><div class="ai-avatar-wrap"><div class="ai-avatar">🤖</div><span class="ai-status online"></span></div><div class="ai-info"><h3>AI助手</h3><p>智能分析</p></div><span class="ai-source">DeepSeek</span></div>
+        <div id="aiChat" class="ai-chat"></div>
+        <div class="ai-input-row"><div class="input-wrap"><input type="text" id="aiInput" placeholder="输入问题..."></div><button id="aiSendBtn" class="ai-send-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+      </div>
+    </div>
+    <div id="view-practice" class="view hidden">
+      <div class="content"><div class="practice-header"><h3>专项练习</h3><p>根据错题生成</p></div><div id="practiceContainer" class="practice-container"></div></div>
+    </div>
+    <div id="view-profile" class="view hidden">
+      <div class="content">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <div class="profile-info">
+            <h2 class="profile-name" id="profileName">用户</h2>
+            <p class="profile-email" id="profileEmail">未设置邮箱</p>
+            <p class="profile-sub">积分 <span id="profilePoints">0</span> · 连续 <span id="profileStreak">0</span> 天</p>
+          </div>
+        </div>
+        <div class="profile-section">
+          <h3 class="profile-section-title">账户信息</h3>
+          <div class="profile-row">
+            <span class="profile-row-label">用户名</span>
+            <span class="profile-row-value" id="profileUsername">-</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label">邮箱</span>
+            <span class="profile-row-value" id="profileEmailDisplay">-</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label">手机号</span>
+            <span class="profile-row-value" id="profilePhoneDisplay">未绑定</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-row-label">等级</span>
+            <span class="profile-row-value" id="profileLevel">-</span>
+          </div>
+        </div>
+        <div class="profile-section">
+          <h3 class="profile-section-title">账号管理</h3>
+          <button id="editEmailBtn" class="profile-action-btn">
+            <span class="action-icon">✉️</span>
+            <span class="action-text">修改邮箱</span>
+            <span class="action-arrow">›</span>
+          </button>
+          <button id="editPasswordBtn" class="profile-action-btn">
+            <span class="action-icon">🔒</span>
+            <span class="action-text">修改密码</span>
+            <span class="action-arrow">›</span>
+          </button>
+          <button id="editPhoneBtn" class="profile-action-btn">
+            <span class="action-icon">📱</span>
+            <span class="action-text">绑定手机号</span>
+            <span class="action-arrow">›</span>
+          </button>
+        </div>
+        <div class="profile-section">
+          <h3 class="profile-section-title">学习统计</h3>
+          <div class="profile-row"><span class="profile-row-label">总错题</span><span class="profile-row-value" id="profileTotal">0</span></div>
+          <div class="profile-row"><span class="profile-row-label">学科数</span><span class="profile-row-value" id="profileSubjects">0</span></div>
+          <div class="profile-row"><span class="profile-row-label">今日新增</span><span class="profile-row-value" id="profileToday">0</span></div>
+        </div>
+        <button id="profileLogoutBtn" class="danger-btn profile-logout-btn">退出登录</button>
+      </div>
+    </div>
+    <div id="tabbar" class="tabbar hidden">
+      <button class="tab-item active" data-view="home"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>首页</span></button>
+      <button class="tab-item" data-view="list"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2v-2H3v2zm4 4h2v-2H7v2zm0 4h2v-2H7v2zm0-8h2v-2H7v2zm4 4h2v-2h-2v2zm0 4h2v-2h-2v2zm0-8h2v-2h-2v2zm4 4h2v-2h-2v2zm0 4h2v-2h-2v2zm0-8h2v-2h-2v2z"/></svg><span>列表</span></button>
+      <button class="tab-item" data-view="rewards"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg><span>奖励</span></button>
+      <button class="tab-item" data-view="ai"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M21 10.12h-6.78l2.74-2.82c-2.73-2.7-7.15-2.8-9.88-.1-2.73 2.71-2.73 7.08 0 9.79s7.15 2.71 9.88 0C18.32 15.65 19 14.08 19 12.1h2c0 1.98-.88 4.55-2.64 6.29-3.51 3.48-9.21 3.48-12.72 0-3.5-3.47-3.53-9.11-.02-12.58s9.14-3.47 12.65 0L21 3v7.12z"/></svg><span>AI</span></button>
+      <button class="tab-item" data-view="profile"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>我的</span></button>
+    </div>
+    <div id="toast" class="toast"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
